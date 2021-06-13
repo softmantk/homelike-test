@@ -1,0 +1,390 @@
+openapi: 3.0.0
+info:
+  title: Home Like
+  description: API documentation for HomeLike API
+  version: 0.0.1
+servers:
+  - url: http://localhost:3010
+    description: local
+paths:
+  /:
+    get:
+      description: Welcome 
+      responses:
+        '200':
+          description: success response
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Welcome
+  /ping:
+    get:
+      description: Check server connectivity
+      summary: ping pong
+      responses:
+          '200':
+            description: OK
+            content:
+              text/plain:
+                schema:
+                  type: string
+                  example: pong
+  /auth/signup:
+    post:
+      summary: Signup api for assessor
+      description: Assessor sign up api
+      tags:
+       - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
+      responses:
+          '200':
+            description: successfull Signup response
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SignUpResponse'
+          '401':
+            description: 401 Authentication failed
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/UnauthorizedError'
+          '406':
+            description: "406 Invalid requests: already exists etc"
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InvalidRequest'
+  /auth/signin:
+    post:
+      description: User sign In
+      summary: User sign In
+      tags:
+       - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+          '200':
+            description: Valid JWT Token
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SignInResponse'
+          '404':
+            description: "404 Email/Password doesn't match or User doesn't exist"
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotFound'
+          '401':
+            description: 401 Authentication failed
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/UnauthorizedError'
+  /auth/request-reset-password:
+    post:
+      description: request for resetting password
+      summary: Initiate password reseting
+      tags:
+       - User
+      requestBody:
+        $ref: '#/components/requestBodies/InitiateResetPasswordRequest'
+      responses:
+          '200':
+            description: Valid JWT Token
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InitiateResetPasswordResponse'
+          '404':
+            description: "404 Cannot find account details"
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotFound'
+  /auth/reset-password:
+    post:
+      description: reset password using email and verification code. code can be found in the email.
+      summary: reset password by email, code
+      tags:
+       - User
+      requestBody:
+        $ref: '#/components/requestBodies/ResetPasswordRequest'
+      responses:
+          '200':
+            description: Valid JWT Token
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InitiateResetPasswordResponse'
+          '404':
+            description: "404 Cannot find account details"
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotFound'
+  # /api/v1/user/payment-indent:
+  #   post:
+  #     summary: create new payment indent
+  #     description: create new payment indent
+  #     tags:
+  #       - User
+  #       - Order
+  #     requestBody:
+  #       $ref: '#/components/requestBodies/createPaymentIndent'
+  #     responses:
+  #       '200':
+  #         description: Meeting token obtained successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/PaymentIndentResponse'
+  #       '401':
+  #         description: 401 Authentication failed
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/UnauthorizedError'
+  #       '406':
+  #         description: 401 Authentication failed
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/InvalidRequest'
+  #     security:
+  #       - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+  parameters:
+    IdentityId:
+      name: identityId
+      description: Id of the identity
+      in: path
+      required: true
+      example: 5ef052ae2a952a535d3a695f
+      schema:
+        type: string
+    EmailToken:
+      in: query
+      name: code
+      description: Token for verifying email address
+      schema:
+        type: string
+    name: 
+      in: query
+      name: name
+      description: name of the user
+      schema:
+        type: string
+    page:
+      in: query
+      name: page
+      description: 'page no. of the list'
+      schema:
+        type: string
+    limit:
+      in: query
+      name: limit
+      description: 'items per page'
+      schema:
+        type: string
+  schemas:
+    SignUpRequest:
+      title: User information to register
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+      properties:
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        email:
+          type: string
+          example: test@mail.com
+        password:
+          type: string
+          example: strongPa$
+    SignInRequest:
+      title: User information to login
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: test@mail.com
+        password:
+          type: string
+          example: strongPa$
+    SignInResponse:
+      title: Successful sign in response
+      type: object
+      properties:
+        token:
+          type: string
+          example: wedfchvgjbvd5drtcyvgjhbvtfy6drycvguhjk
+        user:
+          $ref: '#/components/schemas/UserObject'
+    InitiateResetPasswordResponse:
+      title: reset password request response
+      type: object
+      properties:
+        message: 
+          type: string
+          example: 'Please check email to reset password'
+    SignUpResponse:
+      title: Successful sign up response
+      type: object
+      properties:
+        token:
+          type: string
+          example: wedfchvgjbvd5drtcyvgjhbvtfy6drycvguhjk
+        user:
+          $ref: '#/components/schemas/UserObject'
+    UserObject:
+      title: User object
+      type: object
+      properties:
+        id:
+          type: string
+          example: "12345678345678"
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        email:
+          type: string
+          example: test@mail.com
+        role:
+          description: 'role id'
+          oneOf:
+            - type: string
+            - type: object
+        account:
+          type: object
+          properties:
+            status:
+              type: string
+              example: active
+            verification:
+              type: object
+              properties:
+                verified:
+                  type: boolean
+                  example: false
+                expiry:
+                  type: string
+                  format: date
+                  example: '2020-07-29T05:41:45.829Z'
+                code:
+                  type: string
+                  example: '3cf842c717c15b4c177b266fd21a5b43a3574f741308b543eaa92a2d5b2454a64feb83a2e02467557ffdfb7111ced6ca3a0f100e087d7b8a141a6f1f0fd40be47a736ef9d1e68c8d'
+    IdentityId:
+      type: string
+      example: "5ed391b30eff84d75ea24c9f"
+    DateISO:
+      type: string
+      example: "2020-06-19T11:52:59.985Z"
+    UnauthorizedError:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 401
+        code:
+          type: string
+          example: UnauthorizedError
+        message:
+          type: string
+          example: Unauthorized
+        requestId:
+          type: string
+          example: 0cb1fafa-02ce-11e9-8ac1-27e4f9719536
+    InvalidRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          example: CannotFetchMeetingDetails
+        message:
+          type: string
+          example: Meeting expired
+        requestId:
+          type: string
+          example: 5a28f137-d189-4f8a-a730-7ce861013b96
+        title:
+          type: string
+          example: Meeting expired
+    NotFound:
+      title:  Requested object not found
+      type: object
+      properties:
+        code:
+          type: string
+          example: NotFound
+        message:
+          type: string
+          example: No records found
+        requestId:
+          type: string
+          example: 0cb1fafa-02ce-11e9-8ac1-27e4f9719536
+    ObjectId:
+      description: Mongoose object id
+      example: 5ef052ae6a952a535d3a695f
+      type: string
+      pattern: ^[a-f\d]{24}$
+  requestBodies:
+    InitiateResetPasswordRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: a@mail.com
+    ResetPasswordRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: a@mail.com
+              code:
+                type: string
+                example: bb50ebedaa86cca633b7f60b0058074d60e440bfb7645e50d80079b7654587
+              password:
+                type: 'string'
+                example: 'StrongPass'
