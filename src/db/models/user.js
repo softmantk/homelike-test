@@ -12,18 +12,8 @@ const UserSchema = new Schema(
             type: String,
             index: true
         },
-        createdBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true
-        },
         phoneNo: String,
         password: String,
-        role: {
-            type: mongoose.Schema.Types.ObjectId,
-            default: '5ed3915c412421e1fda23dbb',
-            ref: 'Role',
-            required: true,
-        },
         account: {
             status: {
                 type: String,

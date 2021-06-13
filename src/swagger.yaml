@@ -228,7 +228,7 @@ components:
           example: test@mail.com
         password:
           type: string
-          example: strongPa$
+          example: 1234
     SignInRequest:
       title: User information to login
       type: object
@@ -241,7 +241,7 @@ components:
           example: test@mail.com
         password:
           type: string
-          example: strongPa$
+          example: 1234
     SignInResponse:
       title: Successful sign in response
       type: object
