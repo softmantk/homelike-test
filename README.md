@@ -57,7 +57,7 @@ For production environments...
 -  You can run the seed to load apartment test data
 -  Goto http://baseUrl/api-docs to view  Swagger documentation
 -  For accessing any api starts with url '/api/v1' should have authorisation token
-
+-  You can also view the database on port "MONGO_EXPRESS_PORT" by providing the MONGO_EXPRESS_USERNAME and MONGO_EXPRESS_PASSWORD. credentials should be set in .env file.
 
 
 
