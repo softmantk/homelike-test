@@ -25,11 +25,11 @@ exports.findApartments = async (query) => {
         country: query.country,
         rooms: query.rooms,
     });
-    const radiusFilters = {
+    const radiusFilters = util.removeUndefined({
         lat: query.lat,
         long: query.long,
         maxDistance: query.maxDistance
-    }
+    });
     const apartments = await apartmentService.findApartments(query.searchQuery, locationFilters, radiusFilters, query.limit, query.page);
     return apartments
 }

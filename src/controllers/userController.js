@@ -12,11 +12,11 @@ const createUser = async (data) => {
     logger.debug('5:createUser:existingUser:', existingUser);
     if (existingUser) {
         // todo verification is not done.
-        if (existingUser.verification.verified) {
-            throw createError(errors.unauthorisedError, "Account not verified")
+        if (!existingUser.account.verification.verified) {
+            throw createError("unauthorisedError", "Account not verified")
         }
         if (existingUser.email === data.email) {
-            throw createError(errors.invalidRequest, "User already exist")
+            throw createError("invalidRequest", "User already exist")
         }
     }
     data.password = await userService.createHash(data.password);
@@ -41,15 +41,15 @@ const userLogin = async (body) => {
         email
     });
     if (!user) {
-        throw createError(errors.notFound, 'User not registered with this email');
+        throw createError("notFound", 'User not registered with this email');
     }
     logger.debug("userLogin:user", user);
     if (!user.account.verification.verified) {
-        throw createError(errors.unauthorisedError, 'Your account is not verified.', 'AccountNotVerified');
+        throw createError("unauthorisedError", 'Your account is not verified.', 'AccountNotVerified');
     }
     const correctPassword = await userService.compareAgainstHash(password, user.password);
     if (!correctPassword) {
-        throw createError(errors.unauthorisedError, 'Username/Email or password is incorrect ');
+        throw createError("unauthorisedError", 'Username/Email or password is incorrect ');
     }
     const validity = (Math.floor(Date.now() / 1000)) + (60 * 60) * config.userLoginTokenExpiry // hour * userLoginTokenExpiry
     const token = await userService.createToken(user, validity);
