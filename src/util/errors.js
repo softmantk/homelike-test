@@ -11,6 +11,7 @@ const errorCodes = {
     notFound: {
         status: 404,
         code: "NotFound",
+        message: "resource not found"
     },
     invalidRequest: {
         status: 406,
@@ -33,6 +34,10 @@ const errorCodes = {
     },
 }
 const errors = Object.keys(errorCodes);
+
+const getErrorByCode = (code) => errorCodes[code];
+
+const getErrorByErrorCode = (code) => Object.keys(errorCodes).find(err => errorCodes[err].code === code);
 /**
  * Create error object
  * @param {Object} errorCode
@@ -42,16 +47,18 @@ const errors = Object.keys(errorCodes);
  *
  * */
 const createError = (errorCode, message, code, status) => {
-    return {
-        ...exports.errorCodes[errorCode],
-        message,
-        code,
-        status
+    const rsp = {
+        ...errorCodes[errorCode],
+        message: message || errorCodes[errorCode].message,
+        code: code || errorCodes[errorCode].code,
+        status: status || errorCodes[errorCode].status,
     }
+    return rsp;
 }
-
 module.exports = {
     // errorCodes,
     createError,
     errors,
+    getErrorByCode,
+    getErrorByErrorCode
 }

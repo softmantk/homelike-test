@@ -37,30 +37,14 @@ paths:
       tags:
        - User
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignUpRequest'
+        $ref: '#/components/requestBodies/SignUpRequest'
       responses:
           '200':
-            description: successfull Signup response
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SignUpResponse'
+            $ref: '#/components/responses/SignUpResponse'
           '401':
-            description: 401 Authentication failed
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/UnauthorizedError'
+            $ref: '#/components/responses/UnauthorizedError'
           '406':
-            description: "406 Invalid requests: already exists etc"
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InvalidRequest'
+            $ref: '#/components/responses/InvalidRequest'
   /auth/signin:
     post:
       description: User sign In
@@ -68,113 +52,198 @@ paths:
       tags:
        - User
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignInRequest'
+        $ref: '#/components/requestBodies/SignInRequest'
       responses:
           '200':
-            description: Valid JWT Token
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SignInResponse'
+            $ref: '#/components/responses/SignUpResponse'
           '404':
-            description: "404 Email/Password doesn't match or User doesn't exist"
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotFound'
-          '401':
-            description: 401 Authentication failed
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/UnauthorizedError'
-  /auth/request-reset-password:
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/InvalidRequest'
+  /api/v1/apartment:
     post:
-      description: request for resetting password
-      summary: Initiate password reseting
-      tags:
-       - User
+      summary: create appartment
+      description: create appartment
+      tags: 
+        - Apartment
       requestBody:
-        $ref: '#/components/requestBodies/InitiateResetPasswordRequest'
+        $ref: '#/components/requestBodies/CreateApartment'
       responses:
-          '200':
-            description: Valid JWT Token
+        '200':
+          description: Success
+          content:
+            appliaction/json:
+              schema:
+                $ref: '#/components/schemas/Apartment'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+        '406':
+            $ref: '#/components/responses/InvalidRequest'
+    get:
+      summary: search apartments
+      # desciption: search aparmtments by city, state, location
+      tags:
+        - Apartment
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/city'
+        - $ref: '#/components/parameters/state'
+        - $ref: '#/components/parameters/country'
+        - $ref: '#/components/parameters/withinLat'
+        - $ref: '#/components/parameters/withinLong'
+      responses:
+        '200':
+          description: Apartment list
+          content:
+            appliaction/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apartment'
+      
+  /api/v1/apartment/{id}:  
+    get:
+      summary: get apartment by id
+      description: get apartment by id
+      tags:
+        - Apartment
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+            description: Success
             content:
-              application/json:
+              appliaction/json:
                 schema:
-                  $ref: '#/components/schemas/InitiateResetPasswordResponse'
-          '404':
-            description: "404 Cannot find account details"
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotFound'
-  /auth/reset-password:
+                  $ref: '#/components/schemas/Apartment'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+        '406':
+            $ref: '#/components/responses/InvalidRequest'
+      security:
+        - bearerAuth: []
+  /api/v1/favourite:
     post:
-      description: reset password using email and verification code. code can be found in the email.
-      summary: reset password by email, code
+      summary: create new favourite
+      description: create new user favourite
       tags:
-       - User
+        - Favourite
       requestBody:
-        $ref: '#/components/requestBodies/ResetPasswordRequest'
+        $ref: '#/components/requestBodies/CreateFavourite'
       responses:
-          '200':
-            description: Valid JWT Token
+        '200':
+            description: Success
             content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InitiateResetPasswordResponse'
-          '404':
-            description: "404 Cannot find account details"
+              appliaction/json:
+                  schema:
+                    $ref: '#/components/schemas/Favourite'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/InvalidRequest'
+      security:
+        - bearerAuth: []
+    get: 
+      summary: get favourites 
+      description: get user favourites of the user
+      tags:
+        - Favourite
+      responses:
+        '200':
+            description: Success
             content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotFound'
-  # /api/v1/user/payment-indent:
-  #   post:
-  #     summary: create new payment indent
-  #     description: create new payment indent
-  #     tags:
-  #       - User
-  #       - Order
-  #     requestBody:
-  #       $ref: '#/components/requestBodies/createPaymentIndent'
-  #     responses:
-  #       '200':
-  #         description: Meeting token obtained successfully
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/PaymentIndentResponse'
-  #       '401':
-  #         description: 401 Authentication failed
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/UnauthorizedError'
-  #       '406':
-  #         description: 401 Authentication failed
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/InvalidRequest'
-  #     security:
-  #       - bearerAuth: []
+              appliaction/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Favourite'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/InvalidRequest'
+      security:
+        - bearerAuth: []
+  /api/v1/favourite/{id}: 
+    parameters:
+      - $ref: '#/components/parameters/id'
+    delete:
+      summary: delete favourite
+      description: delete fovourite by id
+      tags:
+        - Favourite
+      responses:
+        '200':
+            description: Delete success
+            content:
+              appliaction/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/InvalidRequest'
+      security:
+        - bearerAuth: []
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: x-api-key
   parameters:
+    withinLat:
+      name: withInLat
+      in: query
+      schema:
+        type: number
+        example: 1.233
+    searchQuery:
+      name: searchQuery
+      in: query
+      schema:
+        type: string
+        example: uae
+    withinLong:
+      name: withInLong
+      in: query
+      schema:
+        type: number
+        example: 13.233
+    country:
+      name: country
+      in: query
+      schema:
+        type: string
+        example: DE
+    state:
+      name: state
+      in: query
+      schema:
+        type: string
+        example: HE
+    city:
+      name: city
+      in: query
+      schema:
+        type: string
+        example: FrankFurt
+    id:
+      name: id
+      description: id
+      in: path
+      required: true
+      schema:
+         $ref: '#/components/schemas/ObjectId'
     IdentityId:
       name: identityId
       description: Id of the identity
@@ -208,65 +277,63 @@ components:
       schema:
         type: string
   schemas:
-    SignUpRequest:
-      title: User information to register
-      type: object
-      required:
-        - firstName
-        - lastName
-        - email
-        - password
-      properties:
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          example: test@mail.com
-        password:
-          type: string
-          example: 1234
-    SignInRequest:
-      title: User information to login
-      type: object
-      required:
-        - email
-        - password
-      properties:
-        email:
-          type: string
-          example: test@mail.com
-        password:
-          type: string
-          example: 1234
-    SignInResponse:
-      title: Successful sign in response
+    Apartment:
+      title: Apartment
       type: object
       properties:
-        token:
+        title:
           type: string
-          example: wedfchvgjbvd5drtcyvgjhbvtfy6drycvguhjk
+          example: Cosy Apartments with kitchen - stylish & comfortable wit
+        description:
+          type: string
+          example: We would like to welcome you to Frankfurt West, a central and beautiful district that is currently undergoing a very exciting development. 150 apartments from 20 to 40 sqm are waiting for you. Some of them with balcony or terrace
         user:
-          $ref: '#/components/schemas/UserObject'
-    InitiateResetPasswordResponse:
-      title: reset password request response
-      type: object
-      properties:
-        message: 
+          $ref: '#/components/schemas/ObjectId'
+        totalRooms:
+          type: number
+          example: 2
+        apartmentType:
           type: string
-          example: 'Please check email to reset password'
-    SignUpResponse:
-      title: Successful sign up response
-      type: object
-      properties:
-        token:
+          example: guest
+        code:
           type: string
-          example: wedfchvgjbvd5drtcyvgjhbvtfy6drycvguhjk
-        user:
-          $ref: '#/components/schemas/UserObject'
+          example: DE-12345
+        amenities:
+          type: object
+          properties:
+            tv: 
+              type: boolean
+            heating:
+              type: boolean
+            towelAndSheets:
+              type: boolean
+            washingMachine:
+              type: boolean
+            workDesk:
+              type: boolean
+        location:
+          type: object
+          properties:
+            streetAddress:
+              type: string
+              example: Solmsstraße , 60486 ,Frankfurt am Main, Deutschland
+            city:
+              type: string
+              example: Frankfurt am Main
+            state:
+              type: string
+              example: HE
+            country:
+              type: string
+              example: DE
+            loc:
+              type: object
+              properties:
+                coordinates:
+                  type: array
+                  items:
+                    type: number
+                    example: [1.2222,2.3333]
     UserObject:
       title: User object
       type: object
@@ -313,78 +380,175 @@ components:
     DateISO:
       type: string
       example: "2020-06-19T11:52:59.985Z"
-    UnauthorizedError:
-      type: object
-      properties:
-        statusCode:
-          type: integer
-          example: 401
-        code:
-          type: string
-          example: UnauthorizedError
-        message:
-          type: string
-          example: Unauthorized
-        requestId:
-          type: string
-          example: 0cb1fafa-02ce-11e9-8ac1-27e4f9719536
-    InvalidRequest:
-      type: object
-      properties:
-        code:
-          type: string
-          example: CannotFetchMeetingDetails
-        message:
-          type: string
-          example: Meeting expired
-        requestId:
-          type: string
-          example: 5a28f137-d189-4f8a-a730-7ce861013b96
-        title:
-          type: string
-          example: Meeting expired
-    NotFound:
-      title:  Requested object not found
-      type: object
-      properties:
-        code:
-          type: string
-          example: NotFound
-        message:
-          type: string
-          example: No records found
-        requestId:
-          type: string
-          example: 0cb1fafa-02ce-11e9-8ac1-27e4f9719536
+    UUID:
+      type: string
+      format: uuid
     ObjectId:
       description: Mongoose object id
       example: 5ef052ae6a952a535d3a695f
       type: string
       pattern: ^[a-f\d]{24}$
-  requestBodies:
-    InitiateResetPasswordRequest:
-      required: true
+    Favourite:
+      description: Favourite schema
+      type: object
+      properties:
+        user: 
+          $ref: '#/components/schemas/ObjectId'
+        id:
+          $ref: '#/components/schemas/UUID'
+        createdAt:
+          $ref: '#/components/schemas/DateISO'
+        updatedAt:
+          $ref: '#/components/schemas/DateISO'
+  responses:
+    UnauthorizedError:
+      description: Unauthorised error
       content:
         application/json:
-          schema:
+          schema: 
             type: object
             properties:
-              email:
-                type: string
-                example: a@mail.com
-    ResetPasswordRequest:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              email:
-                type: string
-                example: a@mail.com
+              statusCode:
+                type: integer
+                example: 401
               code:
                 type: string
-                example: bb50ebedaa86cca633b7f60b0058074d60e440bfb7645e50d80079b7654587
+                example: UnauthorizedError
+              message:
+                type: string
+                example: Unauthorized
+    InvalidRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema: 
+            type: object
+            properties:
+              code:
+                type: string
+                example: InvalidRequest
+              message:
+                type: string
+                example: Invalid request
+              title:
+                type: string
+                example: Invalid
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema: 
+            type: object
+            properties:
+              code:
+                type: string
+                example: NotFound
+              message:
+                type: string
+                example: No records found
+    SignUpResponse:
+      description: Successful sign up response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                example: wedfchvgjbvd5drtcyvgjhbvtfy6drycvguhjk
+              user:
+                $ref: '#/components/schemas/UserObject'
+    SignInResponse:
+      description: Signin response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                example: wedfchvgjbvd5drtcyvgjhbvtfy6drycvguhjk
+              user:
+                $ref: '#/components/schemas/UserObject'
+  requestBodies:
+    SignInRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                example: test@mail.com
               password:
-                type: 'string'
-                example: 'StrongPass'
+                type: string
+                example: 1234
+    SignUpRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - firstName
+              - lastName
+              - email
+              - password
+            properties:
+              firstName:
+                type: string
+                example: John
+              lastName:
+                type: string
+                example: Doe
+              email:
+                type: string
+                example: test@mail.com
+              password:
+                type: string
+                example: 1234
+    CreateFavourite:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              apartmentId:
+                $ref: '#/components/schemas/ObjectId'
+    CreateApartment:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                example: Cosy Apartments with kitchen - stylish & comfortable wit
+              apartmentType:
+                  example: studio
+              description:
+                type: string
+                example: '150 apartments from 20 to 40 sqm are waiting for you. Some of them with balcony or terrace. The “Salone”, our community area, is at your disposal if you don’t want to work in the apartment or if you just feel like some company.'
+              country:
+                type: string
+                example: DE
+              state:
+                type: string
+                example: HE
+              city:
+                type: string
+                example: 25222
+              lat:
+                type: number
+                example: 50.11552000
+              long:
+                type: number
+                example: 8.68417000
+              
+                

@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "faker": "^5.5.3",
     "jest": "^27.0.4",
     "swagger-editor-live": "^2.1.8"
   },
@@ -19,6 +20,7 @@
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "country-state-city": "^2.2.0",
     "dotenv-flow": "^3.2.0",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",

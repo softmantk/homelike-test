@@ -13,6 +13,7 @@ const cors = require('cors');
 const OpenApiValidator = require('express-openapi-validator');
 
 const logger = require('../util/logger');
+const errors = require('../util/errors')
 const util = require('../util');
 const API = require('../routes/api');
 const config = require('../config');
@@ -76,15 +77,23 @@ module.exports = async (app) => {
      ************************************************ */
     API.init(app);
 
+    app.use((req, res) => {
+        return res.json(util.createErrorResponse(errors.createError('notFound'), req, res))
+    });
+
     // noinspection JSUnusedLocalSymbols
     /***********************************************
      * Express Error handler middleware
      ************************************************ */
     app.use(async (err, req, res, next) => {
-        logger.error(":err", err);
-        if ([400, 401, 404].includes(err.status)) {
+        console.log(":errors.getErrorByCode(err.code)", errors.getErrorByErrorCode(err.code), err.code);
+        if (errors.getErrorByErrorCode(err.code)) {
             return util.createErrorResponse(err, req, res);
         }
+        if ([401].includes(err.status)) {
+            return util.createErrorResponse(err, req, res);
+        }
+        logger.error(err)
         return res.status(500).json(internalError);
     });
 

@@ -2,6 +2,17 @@ const crypto = require('crypto');
 const _ = require('lodash');
 
 const delay = (ms) => new Promise((res) => setTimeout(res,ms))
+/**
+ * Create success response
+ * @param {{
+ *     code: Object,
+ *     message: Object,
+ *     status: Object,
+ *     [name]: String
+ *     [actionParams]: Object
+ * }} body
+ * @param {Object} res
+ * */
 const createErrorResponse = (
     {
         code,
@@ -9,7 +20,7 @@ const createErrorResponse = (
         status = 400,
         name,
         ...actionParams
-    }, req = {}, res,
+    }, req, res,
 ) => {
     code = code || name;
     const body = {
@@ -17,9 +28,9 @@ const createErrorResponse = (
         message,
         requestId: req.id || res.id,
     };
-    if (!_.isEmpty(actionParams)) {
-        body.actionParams = actionParams;
-    }
+    // if (!_.isEmpty(actionParams)) {
+    //     body.actionParams = actionParams;
+    // }
     const defaultHeaders = {
         'Access-Control-Allow-Origin': '*',
     };
@@ -29,6 +40,12 @@ const createErrorResponse = (
     return res.status(status)
         .json(body);
 };
+/**
+ * Create success response
+ * @param {Object} body
+ * @param {Object} res
+ * @param {Object} [options]
+ * */
 const createSuccessResponse = (body, res, options = {}) => {
     const {
         status = 200,
