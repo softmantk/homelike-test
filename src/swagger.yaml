@@ -4,6 +4,8 @@ info:
   description: API documentation for HomeLike API
   version: 0.0.1
 servers:
+  - url: /
+    description: self
   - url: http://localhost:3010
     description: local
 paths:
