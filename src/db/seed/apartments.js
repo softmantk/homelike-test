@@ -1,5 +1,5 @@
 require('../');
-const uuid = require('uuid').v4;
+const {nanoid} = require('nanoid');
 const Apartments = require('../models/apartment');
 let csc = require('country-state-city').default;
 const faker = require('faker');
@@ -14,8 +14,9 @@ const faker = require('faker');
         for (let i = 0; i < loops; i++) {
             const city = cities[i];
             const apartment = {
-                id: uuid(),
+                code: nanoid(),
                 user: '60c5bc8cc7f747fb5701be6b',
+                apartmentType:"studio",
                 location: {
                     country: city.countryCode,
                     streetAddress: faker.address.streetAddress(),

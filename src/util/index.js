@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const _ = require('lodash');
 
-const delay = (ms) => new Promise((res) => setTimeout(res,ms))
+const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 /**
  * Create success response
  * @param {{
@@ -12,6 +12,7 @@ const delay = (ms) => new Promise((res) => setTimeout(res,ms))
  *     [actionParams]: Object
  * }} body
  * @param {Object} res
+ * @param {Object} req
  * */
 const createErrorResponse = (
     {
@@ -64,6 +65,20 @@ const createSuccessResponse = (body, res, options = {}) => {
         .json(body);
 };
 
+const removeUndefined = (obj) => {
+    for (const propName in obj) {
+        if (obj.hasOwnProperty(propName)) {
+            if (obj[propName] === undefined) {
+                delete obj[propName];
+            }
+        }
+    }
+    return obj
+}
+function escapeRegex(string) {
+    return string?string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'):"";
+}
+
 
 const createRandomBytes = async (length = 64) => {
     return crypto.randomBytes(length)
@@ -73,5 +88,7 @@ module.exports = {
     createErrorResponse,
     createSuccessResponse,
     createRandomBytes,
-    delay
+    delay,
+    removeUndefined,
+    escapeRegex
 };

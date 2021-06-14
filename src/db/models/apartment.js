@@ -33,7 +33,7 @@ const locationSchema = {
     },
     loc: {
         type: pointSchema,
-        // index: '2dsphere',
+        index: '2dsphere',
         required: true
     }
 }
@@ -93,8 +93,8 @@ ApartmentSchema.index({
     'location.state': 'text',
     'location.city': 'text',
 });
-pointSchema.index({
-    loc: '2dsphere'
+ApartmentSchema.index({
+    "location.loc": '2dsphere'
 });
 ApartmentSchema.plugin(mongooseDelete, {overrideMethods: true});
 // Register UserSchema for 'User' model

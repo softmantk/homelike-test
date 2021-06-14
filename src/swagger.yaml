@@ -79,6 +79,8 @@ paths:
             $ref: '#/components/responses/UnauthorizedError'
         '406':
             $ref: '#/components/responses/InvalidRequest'
+      security:
+        - bearerAuth: []
     get:
       summary: search apartments
       # desciption: search aparmtments by city, state, location
@@ -89,8 +91,12 @@ paths:
         - $ref: '#/components/parameters/city'
         - $ref: '#/components/parameters/state'
         - $ref: '#/components/parameters/country'
-        - $ref: '#/components/parameters/withinLat'
-        - $ref: '#/components/parameters/withinLong'
+        - $ref: '#/components/parameters/rooms'
+        - $ref: '#/components/parameters/lat'
+        - $ref: '#/components/parameters/long'
+        - $ref: '#/components/parameters/maxDistance'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/page'
       responses:
         '200':
           description: Apartment list
@@ -100,6 +106,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Apartment'
+      security:
+        - bearerAuth: []
       
   /api/v1/apartment/{id}:  
     get:
@@ -201,30 +209,45 @@ components:
       scheme: bearer
       bearerFormat: JWT
   parameters:
-    withinLat:
-      name: withInLat
+    lat:
+      name: lat
       in: query
+      description: latitude of the user
       schema:
         type: number
         example: 1.233
+    long:
+      name: long
+      description: longitude of the user
+      in: query
+      schema:
+        type: number
+        example: 13.233
+    maxDistance:
+      name: maxDistance
+      description: distance boundary in Meter
+      in: query
+      schema:
+        type: number
+        example: 1000
     searchQuery:
       name: searchQuery
       in: query
       schema:
         type: string
         example: uae
-    withinLong:
-      name: withInLong
-      in: query
-      schema:
-        type: number
-        example: 13.233
     country:
       name: country
       in: query
       schema:
         type: string
         example: DE
+    rooms:
+      name: rooms
+      in: query
+      schema:
+        type: number
+        example: 1
     state:
       name: state
       in: query

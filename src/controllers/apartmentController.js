@@ -1,4 +1,5 @@
 const logger = require('../util/logger');
+const util = require('../util')
 const errors = require('../util/errors')
 const apartmentService = require('../services/apartmentService');
 
@@ -17,14 +18,18 @@ exports.createApartment = async (data) => {
     return apartment;
 }
 exports.findApartments = async (query) => {
-    logger.debug("findApartments:query", query);
-    const apartments = await apartmentService.findApartments(query.searchQuery, {
-            lat: query.lat,
-            long: query.long
-        },
-        query.radius,
-        query.limit,
-        query.page
-    )
+    logger.debug("-->findApartments:query", query);
+    const locationFilters = util.removeUndefined({
+        city: query.city,
+        state: query.state,
+        country: query.country,
+        rooms: query.rooms,
+    });
+    const radiusFilters = {
+        lat: query.lat,
+        long: query.long,
+        maxDistance: query.maxDistance
+    }
+    const apartments = await apartmentService.findApartments(query.searchQuery, locationFilters, radiusFilters, query.limit, query.page);
     return apartments
 }
